@@ -1,21 +1,21 @@
 <script setup>
-import { computed } from 'vue';
+import { computed, watch } from 'vue';
 import { ref } from 'vue';
 
 const shoppingItems = ref([
-    { product: 'Brood', price: 1.00, amount: 0 },
-    { product: 'Broccoli', price: 0.99, amount: 0 },
-    { product: 'Krentebollen', price: 1.20, amount: 0 },
-    { product: 'Noten', price: 2.99, amount: 0 }
+    { product: 'Brood', price: 1.00, amount: 0, subTotal: 0.00 },
+    { product: 'Broccoli', price: 0.99, amount: 0, subTotal: 0.00 },
+    { product: 'Krentebollen', price: 1.20, amount: 0, subTotal: 0.00 },
+    { product: 'Noten', price: 2.99, amount: 0, subTotal: 0.00 }
 ])
 
-let Total = computed(() => {
-    let totalPrice = 0
-    for (let i = 0; i < shoppingItems.value.length; i++) {
-        totalPrice += shoppingItems.value[i].amount * shoppingItems.value[i].price
-    }
-    return totalPrice.toFixed(2)
-})
+watch(shoppingItems, (items) => {
+    items.forEach(item => {
+        item.subTotal = parseFloat((item.amount * item.price).toFixed(2));
+    });
+}, { deep: true });
+
+let Total = 0.00
 </script>
 
 <template>
@@ -24,7 +24,7 @@ let Total = computed(() => {
             <table class="w-full bg-slate-900 shadow-2xl">
                 <thead class="bg-slate-800 border-b border-zinc-600">
                     <tr>
-                        <th class="px-4 py-4 text-left font-semibold text-slate-200">Product</th>
+                        <th class="px-4 py-4 text-left font-semibold text-slate-200">Brood</th>
                         <th class="px-4 py-4 text-left font-semibold text-slate-200">Prijs</th>
                         <th class="px-4 py-4 text-left font-semibold text-slate-200">Aantal</th>
                         <th class="px-4 py-4 text-left font-semibold text-slate-200">Subtottaal</th>
@@ -36,9 +36,9 @@ let Total = computed(() => {
                         <td class="px-4 py-4">{{ sI.product }}</td>
                         <td class="px-4 py-4 text-emerald-400">€{{ sI.price }}</td>
                         <td class="px-4 py-4">
-                            <input
-                                class="bg-slate-800 border border-slate-600 rounded px-3 w-[100px] py-1 text-white text-center"
-                                type="number" v-model="sI.amount" min="0" max="99" />
+                            <input class="bg-slate-800 border border-slate-600 rounded px-3 w-[100px] py-1 text-white text-center" 
+                                   type="number" 
+                                   v-model="sI.amount"/>
                         </td>
                         <td class="px-4 py-4 text-emerald-400">€{{ (sI.amount * sI.price).toFixed(2) }}</td>
                     </tr>
